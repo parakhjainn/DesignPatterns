@@ -1,3 +1,5 @@
+/* Protoype Pattern*/
+
 #include <iostream>
 #include <string>
 
