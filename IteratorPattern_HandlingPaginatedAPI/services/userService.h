@@ -1,34 +1,3 @@
-package IteratorPattern_HandlingPaginatedAPI.services;
-
-import IteratorPattern_HandlingPaginatedAPI.iterators.Iterator;
-import IteratorPattern_HandlingPaginatedAPI.iterators.UserIterator;
-import IteratorPattern_HandlingPaginatedAPI.repositories.UserRepository;
-import IteratorPattern_HandlingPaginatedAPI.repositories.UserRepositoryImpl;
-
-import java.util.List;
-
-public class UserService {
-
-    private final UserRepository userRepository;
-    private final Iterator<List<String>> userIterator;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = new UserRepositoryImpl();
-        this.userIterator = new UserIterator(10);
-    }
-
-    public void getUsersOnPlatform() {
-
-        
-        while(userIterator.hasNext()) {
-            List<String> users = userIterator.next();
-            System.out.println(users);
-        }
-
-    }
-}
-
-
 #include <iostream>
 #include <vector>
 #include "../repositories/userRepositoryImpl.h"
