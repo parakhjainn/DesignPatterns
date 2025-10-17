@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <utility>
 #include "level.h"
 #include "vehicle.h"
 
@@ -26,7 +27,7 @@ public:
     ParkingLot& operator=(const ParkingLot&) = delete;
     
     void addLevel(unique_ptr<Level> level) {
-        levels.push_back(move(level));  // FIXED: Added move()
+        levels.push_back(std::move(level));
     }
     
     bool parkVehicle(Vehicle* vehicle) {
