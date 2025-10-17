@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
 #include <mutex>
-#include <stdexcept>
+#include <iostream>
+#include <memory>
 #include "vehicle.h"
 #include "vehicleType.h"
 #include "parkingSpot.h"
@@ -12,76 +12,81 @@ using namespace std;
 
 class Level {
     int floor;
-    vector<ParkingSpot> parkingSpots;
+    vector<unique_ptr<ParkingSpot>> parkingSpots;  // Changed to unique_ptr
     mutex mtx;
-
+    
     static const char* toString(VehicleType t) {
         switch (t) {
-            case VehicleType::BIKE:  return "BIKE";
-            case VehicleType::CAR:   return "CAR";
+            case VehicleType::BIKE: return "BIKE";
+            case VehicleType::CAR: return "CAR";
             case VehicleType::TRUCK: return "TRUCK";
         }
         return "UNKNOWN";
     }
-
+    
 public:
     Level(int floor, int numSpots) : floor(floor) {
         parkingSpots.reserve(3 * numSpots);
-        // bike
+        
+        // Bike spots
         for (int i = 0; i < numSpots; ++i) {
-            parkingSpots.emplace_back(i + 1, VehicleType::BIKE);
+            parkingSpots.push_back(make_unique<ParkingSpot>(i + 1, VehicleType::BIKE));
         }
-        // cars
+        
+        // Car spots
         for (int i = numSpots; i < 2 * numSpots; ++i) {
-            parkingSpots.emplace_back(i + 1, VehicleType::CAR);
+            parkingSpots.push_back(make_unique<ParkingSpot>(i + 1, VehicleType::CAR));
         }
-        // truck
+        
+        // Truck spots (commented out)
         // for (int i = 2 * numSpots; i < 3 * numSpots; ++i) {
-        //     parkingSpots.emplace_back(i + 1, VehicleType::TRUCK);
+        //     parkingSpots.push_back(make_unique<ParkingSpot>(i + 1, VehicleType::TRUCK));
         // }
     }
-
+    
     bool parkVehicle(Vehicle* vehicle) {
         if (vehicle == nullptr) return false;
+        
         lock_guard<mutex> lock(mtx);
         for (auto& spot : parkingSpots) {
             try {
-                spot.parkVehicle(vehicle);
-                return true;
-            } catch (const exception&) {
-                // spot not compatible or occupied; try next
+                if (spot->isAvailable() && spot->getVehicleType() == vehicle->getType()) {
+                    spot->parkVehicle(vehicle);
+                    return true;
+                }
+            } catch (const exception& e) {
+                continue;
             }
         }
-        cout << "No spots available\n";
         return false;
     }
-
-    // Unparks the specific vehicle pointer if found
+    
     bool unparkVehicle(Vehicle* vehicle) {
         if (vehicle == nullptr) return false;
+        
         lock_guard<mutex> lock(mtx);
         for (auto& spot : parkingSpots) {
-            const Vehicle* parked = spot.getParkedVehicle();
-            if (parked != nullptr && parked == vehicle) {
-                spot.unparkVehicle();
+            if (!spot->isAvailable() && 
+                spot->getParkedVehicle() == vehicle) {
+                spot->unparkVehicle();
                 return true;
             }
         }
         return false;
     }
-
+    
     void displayAvailability() {
         lock_guard<mutex> lock(mtx);
-        for (auto& spot : parkingSpots) {
-            if (spot.isAvailable()) {
-                cout << "Parking Spot " << spot.getSpotNumber()
-                          << " is available for type " << toString(spot.getVehicleType())
-                          << "\n";
-            } else {
-                const Vehicle* v = spot.getParkedVehicle();
-                cout << "Parking Spot " << spot.getSpotNumber()
-                     << " is occupied by vehicle " << v->getLicensePlate() << "\n";
+        cout << "Level " << floor << " Availability:\n";
+        for (const auto& spot : parkingSpots) {
+            cout << "  Spot " << spot->getSpotNumber() 
+                 << " [" << toString(spot->getVehicleType()) << "]: "
+                 << (spot->isAvailable() ? "Available" : "Occupied");
+            
+            if (!spot->isAvailable() && spot->getParkedVehicle()) {
+                cout << " (Vehicle: " << spot->getParkedVehicle()->getLicensePlate() << ")";
             }
+            cout << "\n";
         }
     }
 };

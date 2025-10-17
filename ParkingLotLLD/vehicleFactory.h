@@ -1,5 +1,7 @@
-#include <iostream>
-#include <string>
+#pragma once
+
+#include <memory>
+#include <stdexcept>
 #include "vehicle.h"
 #include "vehicleType.h"
 #include "car.h"
@@ -9,12 +11,12 @@ using namespace std;
 
 class VehicleFactory {
 public:
-    static Vehicle createVehicle(string licensePlate, VehicleType type) {
+    static unique_ptr<Vehicle> createVehicle(const string& licensePlate, VehicleType type) {
         switch (type) {
-            case VehicleType::CAR :
-                return Car(licensePlate);
-            case VehicleType::BIKE : 
-                return Bike(licensePlate);
+            case VehicleType::CAR:
+                return make_unique<Car>(licensePlate);
+            case VehicleType::BIKE:
+                return make_unique<Bike>(licensePlate);
             default:
                 throw invalid_argument("Invalid vehicle type");
         }

@@ -9,33 +9,41 @@
 #include "car.h"
 #include "vehicleFactory.h"
 
+using namespace std;
+
 int main() {
     // Singleton access
     ParkingLot& lot = ParkingLot::getInstance();
+    
+    lot.addLevel(make_unique<Level>(0, 1));
+    
+    // Create vehicles using factory pattern
+    auto goodCar = VehicleFactory::createVehicle("abc", VehicleType::CAR);
+    auto goodBike = VehicleFactory::createVehicle("def", VehicleType::BIKE);
 
-    // Give ownership of the Level to the lot
-    lot.addLevel(std::make_unique<Level>(0, 1));
-
-    // Polymorphic objects: use smart pointers, not values (avoid slicing)
-    auto car   = std::make_unique<Car>("abc");
-    auto bike  = std::make_unique<Bike>("abc");
-
-    // Factory pattern returning unique_ptr<Vehicle>
-    auto goodCar  = VehicleFactory::createVehicle("abc", VehicleType::CAR);
-    auto goodBike = VehicleFactory::createVehicle("cde", VehicleType::BIKE);
-
-    // Park vehicles using non-owning raw pointers (observers)
+    auto car = VehicleFactory::createVehicle("abc", VehicleType::CAR);
+    
+    cout << "=== Initial Parking ===\n";
     lot.parkVehicle(goodCar.get());
     lot.parkVehicle(goodBike.get());
-
-    // Attempt to park a different car
-    lot.parkVehicle(car.get()); // may fail if no spot or type mismatch
+    
+    cout << "\n=== Display Availability ===\n";
     lot.displayAvailability();
-
-    lot.unparkVehicle(goodCar.get());
-    lot.displayAvailability();
-
+    
+    cout << "\n=== park car ===\n";
     lot.parkVehicle(car.get());
+    
+    cout << "\n=== Display After parking ===\n";
+    lot.displayAvailability();
+    
+    cout << "\n=== unpark goodCar ===\n";
+    lot.unparkVehicle(goodCar.get());
+    
+    cout << "\n=== Final Display ===\n";
+    lot.displayAvailability();
 
+    cout << "\n=== after unpark goodCar, now park car ===\n";
+    lot.parkVehicle(car.get());
+    
     return 0;
 }
