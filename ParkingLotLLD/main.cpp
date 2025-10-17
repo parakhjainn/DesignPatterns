@@ -15,34 +15,30 @@ int main() {
     // Singleton access
     ParkingLot& lot = ParkingLot::getInstance();
     
+    // make_unique is a utility function template introduced in C++14 that creates and returns a 
+    // unique_ptr to a dynamically allocated object. It provides a safer, cleaner, and more modern 
+    // alternative to manually using the new operator with unique_ptr constructors.
     lot.addLevel(make_unique<Level>(0, 1));
     
     // Create vehicles using factory pattern
-    auto goodCar = VehicleFactory::createVehicle("abc", VehicleType::CAR);
-    auto goodBike = VehicleFactory::createVehicle("def", VehicleType::BIKE);
+    auto goodCar = VehicleFactory::createVehicle("CAR-123", VehicleType::CAR);
+    auto goodBike = VehicleFactory::createVehicle("BIKE-456", VehicleType::BIKE);
 
-    auto car = VehicleFactory::createVehicle("abc", VehicleType::CAR);
+    auto car = VehicleFactory::createVehicle("CAR-321", VehicleType::CAR);
     
-    cout << "=== Initial Parking ===\n";
     lot.parkVehicle(goodCar.get());
     lot.parkVehicle(goodBike.get());
     
-    cout << "\n=== Display Availability ===\n";
     lot.displayAvailability();
     
-    cout << "\n=== park car ===\n";
     lot.parkVehicle(car.get());
     
-    cout << "\n=== Display After parking ===\n";
     lot.displayAvailability();
     
-    cout << "\n=== unpark goodCar ===\n";
     lot.unparkVehicle(goodCar.get());
     
-    cout << "\n=== Final Display ===\n";
     lot.displayAvailability();
 
-    cout << "\n=== after unpark goodCar, now park car ===\n";
     lot.parkVehicle(car.get());
     
     return 0;

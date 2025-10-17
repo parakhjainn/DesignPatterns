@@ -1,5 +1,6 @@
 #pragma once
-#include<string>
+
+#include <string>
 #include "vehicleType.h"
 
 using namespace std;
@@ -8,11 +9,15 @@ class Vehicle {
     string licensePlate;
     VehicleType type;
 public:
-    Vehicle(string licensePlate, VehicleType type) : licensePlate(licensePlate), type(type) {}
+    Vehicle(const string licensePlate, VehicleType type) : licensePlate(licensePlate), type(type) {}
   
-    VehicleType getType() const { return type; }
+    VehicleType getType() {
+        return type; 
+    }
 
-    string getLicensePlate() const { return licensePlate; }
+    string getLicensePlate() { 
+        return licensePlate; 
+    }
 
     virtual ~Vehicle() = default;
 };

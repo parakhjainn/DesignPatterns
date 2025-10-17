@@ -23,14 +23,15 @@ public:
     }
     
     // Delete copy constructor and assignment operator
-    ParkingLot(const ParkingLot&) = delete;
-    ParkingLot& operator=(const ParkingLot&) = delete;
+    ParkingLot(ParkingLot&) = delete;
+    ParkingLot& operator=(ParkingLot&) = delete;
     
     void addLevel(unique_ptr<Level> level) {
-        levels.push_back(std::move(level));
+        levels.push_back(std::move(level)); // utility header
     }
     
     bool parkVehicle(Vehicle* vehicle) {
+        cout << "\n";
         for(auto& level : levels) {
             if(level->parkVehicle(vehicle)) {
                 cout << "Vehicle parked successfully\n";
@@ -42,6 +43,7 @@ public:
     }
     
     bool unparkVehicle(Vehicle* vehicle) {
+        cout << "\n";
         for(auto& level : levels) {
             if(level->unparkVehicle(vehicle)) {
                 cout << "Vehicle unparked\n";

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <mutex>
-#include <stdexcept>
 #include "vehicle.h"
 #include "vehicleType.h"
 
@@ -11,7 +10,7 @@ class ParkingSpot {
     int spotNumber;
     VehicleType vehicleType;
     Vehicle* parkedVehicle; // Non-owning pointer
-    mutable mutex mtx;
+    mutex mtx;
     
 public:
     ParkingSpot(int spotNumber, VehicleType vehicleType)
@@ -19,38 +18,15 @@ public:
           vehicleType(vehicleType),
           parkedVehicle(nullptr) {}
     
-    // Explicitly delete copy operations (mutex is non-copyable)
-    ParkingSpot(const ParkingSpot&) = delete;
-    ParkingSpot& operator=(const ParkingSpot&) = delete;
-    
-    // Allow move operations
-    ParkingSpot(ParkingSpot&& other) noexcept
-        : spotNumber(other.spotNumber),
-          vehicleType(other.vehicleType),
-          parkedVehicle(other.parkedVehicle),
-          mtx() {
-        other.parkedVehicle = nullptr;
-    }
-    
-    ParkingSpot& operator=(ParkingSpot&& other) noexcept {
-        if (this != &other) {
-            spotNumber = other.spotNumber;
-            vehicleType = other.vehicleType;
-            parkedVehicle = other.parkedVehicle;
-            other.parkedVehicle = nullptr;
-        }
-        return *this;
-    }
-    
-    int getSpotNumber() const {
+    int getSpotNumber() {
         return spotNumber;
     }
     
-    VehicleType getVehicleType() const {
+    VehicleType getVehicleType() {
         return vehicleType;
     }
     
-    const Vehicle* getParkedVehicle() const {
+    Vehicle* getParkedVehicle() {
         return parkedVehicle;
     }
     
@@ -59,7 +35,7 @@ public:
         parkedVehicle = v;
     }
     
-    bool isAvailable() const {
+    bool isAvailable() {
         lock_guard<mutex> lock(mtx);
         return parkedVehicle == nullptr;
     }

@@ -1,8 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include <mutex>
-#include <iostream>
 #include <memory>
 #include "vehicle.h"
 #include "vehicleType.h"
@@ -66,8 +66,7 @@ public:
         
         lock_guard<mutex> lock(mtx);
         for (auto& spot : parkingSpots) {
-            if (!spot->isAvailable() && 
-                spot->getParkedVehicle() == vehicle) {
+            if (!spot->isAvailable() && spot->getParkedVehicle() == vehicle) {
                 spot->unparkVehicle();
                 return true;
             }
@@ -77,14 +76,15 @@ public:
     
     void displayAvailability() {
         lock_guard<mutex> lock(mtx);
-        cout << "Level " << floor << " Availability:\n";
-        for (const auto& spot : parkingSpots) {
-            cout << "  Spot " << spot->getSpotNumber() 
-                 << " [" << toString(spot->getVehicleType()) << "]: "
-                 << (spot->isAvailable() ? "Available" : "Occupied");
-            
-            if (!spot->isAvailable() && spot->getParkedVehicle()) {
-                cout << " (Vehicle: " << spot->getParkedVehicle()->getLicensePlate() << ")";
+        cout << "\n";
+        for (auto& spot : parkingSpots) {
+            if(spot->isAvailable()) {
+                cout << "Parking Spot " << spot->getSpotNumber() 
+                    << " is available for type " << toString(spot->getVehicleType());
+            }
+            else {
+                cout << "Parking Spot " << spot->getSpotNumber() 
+                    << " is occupied by vechile " << spot->getParkedVehicle()->getLicensePlate();
             }
             cout << "\n";
         }
