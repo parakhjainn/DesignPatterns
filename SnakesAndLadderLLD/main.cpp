@@ -2,10 +2,12 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+
 using namespace std;
 
 class Dice {
     int size;
+
 public:
     Dice(int size) : size(size) {}
     int rollDice() {
@@ -16,49 +18,75 @@ public:
 class Snake {
     int head;
     int tail;
+
 public:
     Snake(int head, int tail) : head(head), tail(tail) {}
-    int getHead() const { return head; }
-    int getTail() const { return tail; }
+
+    int getHead() { 
+        return head; 
+    }
+    
+    int getTail() { 
+        return tail; 
+    }
 };
 
 class Ladder {
     int bottom;
     int top;
+
 public:
     Ladder(int bottom, int top) : bottom(bottom), top(top) {}
-    int getBottom() const { return bottom; }
-    int getTop() const { return top; }
+    
+    int getBottom() { 
+        return bottom; 
+    }
+    
+    int getTop() { 
+        return top; 
+    }
 };
 
 class Player {
     string name;
     int position;
+
 public:
-    Player(string name, int position) : name(std::move(name)), position(position) {}
-    const string& getName() const { return name; }
-    int getPosition() const { return position; }
-    void setPosition(int pos) { position = pos; }
+    Player(string name, int position) : name(name), position(position) {}
+
+    string& getName() { 
+        return name; 
+    }
+
+    int getPosition() { 
+        return position; 
+    }
+    
+    void setPosition(int pos) {
+        position = pos; 
+    }
 };
 
 class Board {
     int size;
     unordered_map<int, int> snakesMap;
     unordered_map<int, int> laddersMap;
+
 public:
-    Board(int size, const vector<Snake>& snakes, const vector<Ladder>& ladders)
-        : size(size) {
-        for (const auto& s : snakes) {
+    Board(int size, vector<Snake>& snakes, vector<Ladder>& ladders) : size(size) {
+        for (auto& s : snakes) {
             snakesMap[s.getHead()] = s.getTail();
         }
-        for (const auto& l : ladders) {
+        for (auto& l : ladders) {
             laddersMap[l.getBottom()] = l.getTop();
         }
     }
 
-    int getSize() const { return size; }
+    int getSize() { 
+        return size; 
+    }
 
-    int makeMove(int initialPosition, int moveBy) const {
+    int makeMove(int initialPosition, int moveBy) {
         int newPosition = initialPosition + moveBy;
 
         if (newPosition > size) return initialPosition;
@@ -78,12 +106,13 @@ class Game {
     int currentPlayerIndex;
     Board board;
     Dice dice;
+
 public:
-    Game(Board board, Dice dice, const vector<Player>& players, int currentPlayer)
+    Game(Board board, Dice dice, vector<Player>& players, int currentPlayer)
         : players(players),
           currentPlayerIndex(currentPlayer),
-          board(std::move(board)),
-          dice(std::move(dice)) {}
+          board(board),
+          dice(dice) {}
 
     void playGame() {
         cout << "Game Started" << endl;
@@ -104,11 +133,11 @@ public:
                 break;
             }
 
-            currentPlayerIndex = (currentPlayerIndex + 1) % static_cast<int>(players.size());
+            currentPlayerIndex = (currentPlayerIndex + 1) % (int)(players.size());
         }
     }
 
-    bool isGameOver() const {
+    bool isGameOver() {
         return players[currentPlayerIndex].getPosition() == board.getSize();
     }
 };
@@ -124,13 +153,14 @@ int main() {
     snakes.emplace_back(70, 35);
 
     vector<Ladder> ladders;
-    ladders.emplace_back(10, 60);
+    ladders.emplace_back(7, 60);
     ladders.emplace_back(2, 85);
     ladders.emplace_back(10, 80);
 
     Dice dice(6);
     Board board(100, snakes, ladders);
     Game game(board, dice, players, 0);
+
     game.playGame();
 
     return 0;
