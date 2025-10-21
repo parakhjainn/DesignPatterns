@@ -1,6 +1,5 @@
 #include <iostream>
 #include <unordered_map>
-#include <mutex>
 #include <thread>
 #include <chrono>
 
@@ -14,11 +13,10 @@ enum class RateLimiterType {
 class RateLimiter {
 public:
     virtual ~RateLimiter() = default;
-    virtual bool allowRequest(const string& userId) = 0;
+    virtual bool allowRequest(const string &userId) = 0;
 };
 
 class RateLimitConfig {
-private:
     int maxRequests;
     long timeWindowMillis;
     int bucketSize;
@@ -29,10 +27,21 @@ public:
         : maxRequests(maxRequests), timeWindowMillis(timeWindowMillis),
           bucketSize(bucketSize), refillRate(refillRate) {}
 
-    int getMaxRequests() const { return maxRequests; }
-    long getTimeWindowMillis() const { return timeWindowMillis; }
-    int getBucketSize() const { return bucketSize; }
-    double getRefillRate() const { return refillRate; }
+    int getMaxRequests() { 
+        return maxRequests; 
+    }
+
+    long getTimeWindowMillis() { 
+        return timeWindowMillis;
+    }
+    
+    int getBucketSize() { 
+        return bucketSize; 
+    }
+    
+    double getRefillRate() { 
+        return refillRate; 
+    }
 };
 
 class UserTokenBucket {
@@ -43,55 +52,58 @@ public:
     UserTokenBucket(int tokens, long lastRefillTime)
         : tokens(tokens), lastRefillTime(lastRefillTime) {}
 
-    long getLastRefillTime() const { return lastRefillTime; }
-    int getTokens() const { return tokens; }
-    void setTokens(int tokens) { this->tokens = tokens; }
-    void setLastRefillTime(long lastRefillTime) { this->lastRefillTime = lastRefillTime; }
+    long getLastRefillTime() { 
+        return lastRefillTime; 
+    }
+
+    int getTokens() { 
+        return tokens; 
+    }
+
+    void setTokens(int tokens) { 
+        this->tokens = tokens; 
+    }
+
+    void setLastRefillTime(long lastRefillTime) { 
+        this->lastRefillTime = lastRefillTime; 
+    }
 };
 
+long getCurrentTimeMillis() {
+    return chrono::duration_cast<chrono::milliseconds>(
+                chrono::system_clock::now().time_since_epoch())
+        .count();
+}
 
 class TokenBucketRateLimiter : public RateLimiter {
     RateLimitConfig config;
     unordered_map<string, UserTokenBucket> userBuckets;
-    mutex mtx;
-
-    long getCurrentTimeMillis() {
-        return chrono::duration_cast<chrono::milliseconds>(
-            chrono::system_clock::now().time_since_epoch()
-        ).count();
-    }
 
 public:
-    TokenBucketRateLimiter(const RateLimitConfig& config) : config(config) {}
+    TokenBucketRateLimiter(RateLimitConfig &config) : config(config) {}
 
-    bool allowRequest(const string& userId) override {
-        lock_guard<mutex> lock(mtx);
-        
+    bool allowRequest(const string &userId) override {
         long currentTime = getCurrentTimeMillis();
-        
+
         if (userBuckets.find(userId) == userBuckets.end()) {
             userBuckets.emplace(userId, UserTokenBucket(config.getBucketSize(), currentTime));
         }
 
-        UserTokenBucket& userBucket = userBuckets.at(userId);
+        UserTokenBucket &userBucket = userBuckets.at(userId);
 
         // Calculate tokens to add based on elapsed time
         long elapsedTime = currentTime - userBucket.getLastRefillTime();
         double tokensToAdd = (elapsedTime / 1000.0) * config.getRefillRate();
-        
+
         // Only update if we have at least 1 full token to add
         if (tokensToAdd >= 1.0) {
-            int fullTokens = static_cast<int>(tokensToAdd);
+            int fullTokens = (int)(tokensToAdd);
             userBucket.setTokens(min(config.getBucketSize(), userBucket.getTokens() + fullTokens));
-            
-            // CRITICAL: Only advance timestamp by the time equivalent 
+
+            // CRITICAL: Only advance timestamp by the time equivalent
             // to the tokens actually added
-            long timeForTokensAdded = static_cast<long>(
-                (fullTokens / config.getRefillRate()) * 1000.0
-            );
-            userBucket.setLastRefillTime(
-                userBucket.getLastRefillTime() + timeForTokensAdded
-            );
+            long timeForTokensAdded = (long)((fullTokens / config.getRefillRate()) * 1000.0);
+            userBucket.setLastRefillTime(userBucket.getLastRefillTime() + timeForTokensAdded);
         }
 
         // Check if we have at least 1 token available
@@ -102,29 +114,19 @@ public:
 
         return false;
     }
-
 };
 
 class FixedWindowRateLimiter : public RateLimiter {
     unordered_map<string, int> userRequestCount;
     unordered_map<string, long> userWindowStart;
     RateLimitConfig config;
-    mutex mtx;
-
-    long getCurrentTimeMillis() {
-        return chrono::duration_cast<chrono::milliseconds>(
-            chrono::system_clock::now().time_since_epoch()
-        ).count();
-    }
 
 public:
-    FixedWindowRateLimiter(const RateLimitConfig& config) : config(config) {}
+    FixedWindowRateLimiter(RateLimitConfig &config) : config(config) {}
 
-    bool allowRequest(const string& userId) override {
-        lock_guard<mutex> lock(mtx);
-        
+    bool allowRequest(const string &userId) override {
         long currentTime = getCurrentTimeMillis();
-        
+
         // Check if user has an existing window
         if (userWindowStart.find(userId) == userWindowStart.end()) {
             // New user - initialize window
@@ -132,9 +134,9 @@ public:
             userRequestCount[userId] = 1;
             return true;
         }
-        
+
         long windowStart = userWindowStart[userId];
-        
+
         // Check if current window has expired
         if (currentTime - windowStart >= config.getTimeWindowMillis()) {
             // Window expired - start new window
@@ -142,7 +144,7 @@ public:
             userRequestCount[userId] = 1;
             return true;
         }
-        
+
         // Within current window - increment and check limit
         userRequestCount[userId]++;
         return userRequestCount[userId] <= config.getMaxRequests();
@@ -151,19 +153,19 @@ public:
 
 class RateLimiterFactory {
 public:
-    static RateLimiter* getRateLimiter(RateLimiterType rateLimiterType, const RateLimitConfig& config) {
-        switch(rateLimiterType) {
+    static RateLimiter *getRateLimiter(RateLimiterType rateLimiterType, RateLimitConfig &config) {
+        switch (rateLimiterType) {
             case RateLimiterType::TOKENBUCKET:
                 return new TokenBucketRateLimiter(config);
             case RateLimiterType::FIXED:
                 return new FixedWindowRateLimiter(config);
-            default: 
+            default:
                 throw invalid_argument("Not implemented");
         }
     }
 };
 
-void testTokenBucketRateLimiter(RateLimiter* rateLimiter, const string& userId, int bucketSize, double refillRate) {
+void testTokenBucketRateLimiter(RateLimiter *rateLimiter, const string &userId, int bucketSize, double refillRate) {
     cout << "Testing Token Bucket Rate Limiter for user: " << userId << endl;
     cout << "Bucket Size : " << bucketSize << " & Refill Rate : " << refillRate << endl;
     cout << "Making 10 requests..." << endl;
@@ -177,7 +179,7 @@ void testTokenBucketRateLimiter(RateLimiter* rateLimiter, const string& userId, 
     cout << "Test complete. See above for request results and token bucket state after each request." << endl;
 }
 
-void testFixedWindowRateLimiter(RateLimiter* rateLimiter, const string& userId, long timeWindowMillis, int maxRequests) {
+void testFixedWindowRateLimiter(RateLimiter *rateLimiter, const string &userId, long timeWindowMillis, int maxRequests) {
     cout << "Testing Fixed Window Rate Limiter for user: " << userId << endl;
     cout << "Time Window in Millis : " << timeWindowMillis << " & Max Requests : " << maxRequests << endl;
     cout << "Making 10 requests..." << endl;
@@ -196,16 +198,16 @@ int main() {
 
     int maxRequests = 2;
     long timeWindowMillis = 4000; // 10 seconds
-    double refillRate = 1.0; // 1 token per second
+    double refillRate = 1.0;      // 1 token per second
     int bucketSize = 2;
 
     RateLimitConfig config(maxRequests, timeWindowMillis, bucketSize, refillRate);
 
     // bucketSize & refillRate
-    RateLimiter* tokenBucket = RateLimiterFactory::getRateLimiter(RateLimiterType::TOKENBUCKET, config);
+    RateLimiter *tokenBucket = RateLimiterFactory::getRateLimiter(RateLimiterType::TOKENBUCKET, config);
 
     // timeWindowMillis & maxRequests
-    RateLimiter* fixedWindowBucket = RateLimiterFactory::getRateLimiter(RateLimiterType::FIXED, config);
+    RateLimiter *fixedWindowBucket = RateLimiterFactory::getRateLimiter(RateLimiterType::FIXED, config);
 
     testTokenBucketRateLimiter(tokenBucket, "leo_messi", bucketSize, refillRate);
     testFixedWindowRateLimiter(fixedWindowBucket, "cr7", timeWindowMillis, maxRequests);
