@@ -1,8 +1,6 @@
 #pragma once
 
-#include <mutex>
-#include "vehicle.h"
-#include "vehicleType.h"
+#include "models/vehicle.h"
 
 using namespace std;
 
@@ -10,7 +8,6 @@ class ParkingSpot {
     int spotNumber;
     VehicleType vehicleType;
     Vehicle* parkedVehicle; // Non-owning pointer
-    mutex mtx;
     
 public:
     ParkingSpot(int spotNumber, VehicleType vehicleType)
@@ -31,12 +28,10 @@ public:
     }
     
     void setParkedVehicle(Vehicle* v) {
-        lock_guard<mutex> lock(mtx);
         parkedVehicle = v;
     }
     
     bool isAvailable() {
-        lock_guard<mutex> lock(mtx);
         return parkedVehicle == nullptr;
     }
     
@@ -45,7 +40,6 @@ public:
             throw invalid_argument("Vehicle pointer is null");
         }
         
-        lock_guard<mutex> lock(mtx);
         if (parkedVehicle == nullptr && vehicle->getType() == vehicleType) {
             parkedVehicle = vehicle;
             return;
@@ -55,7 +49,6 @@ public:
     }
     
     void unparkVehicle() {
-        lock_guard<mutex> lock(mtx);
         parkedVehicle = nullptr;
     }
 };
