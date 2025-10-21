@@ -16,13 +16,13 @@ class Player {
     Symbol symbol;
 
 public:
-    Player(const string& name, Symbol symbol) : name(name), symbol(symbol) {}
+    Player(string& name, Symbol symbol) : name(name), symbol(symbol) {}
 
-    string getName() const {
+    string getName() {
         return name;
     }
 
-    Symbol getSymbol() const {
+    Symbol getSymbol() {
         return symbol;
     }
 };

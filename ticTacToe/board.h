@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <mutex>
 #include "player.h"
 
 using namespace std;
@@ -11,23 +10,22 @@ class Board {
     int maxMoves;
     int moves;
     vector<vector<Symbol>> grid;
-    mutex mtx;
 
     // Helper method to convert Symbol to char for display
-    char symbolToChar(Symbol s) const {
+    char symbolToChar(Symbol s) {
         if (s == Symbol::X) return 'X';
         if (s == Symbol::O) return 'O';
         return ' ';
     }
 
 public:
+    Board() {}
+
     Board(int size) : size(size), maxMoves(size * size), moves(0) {
         grid.resize(size, vector<Symbol>(size, Symbol::E));
     }
 
     void playMove(int row, int col, Symbol symbol) {
-        lock_guard<mutex> lock(mtx);
-
         if (row < 0 || col < 0 || row >= size || col >= size || grid[row][col] != Symbol::E) {
             throw invalid_argument("Invalid move");
         }
@@ -35,7 +33,7 @@ public:
         moves++;
     }
 
-    void printBoard() const {
+    void printBoard() {
         cout << "\nCurrent Board:\n";
         
         // Print top border
@@ -61,7 +59,7 @@ public:
         cout << endl;
     }
 
-    bool isGameOver() const {
+    bool isGameOver() {
         return moves == maxMoves;
     }
 
@@ -77,8 +75,7 @@ public:
                     break;
                 }
             }
-            if (match)
-                return true;
+            if (match) return true;
         }
 
         // col check
@@ -90,8 +87,7 @@ public:
                     break;
                 }
             }
-            if (match)
-                return true;
+            if (match) return true;
         }
 
         // positive diagonal (0,0 - 1,1)
@@ -106,8 +102,7 @@ public:
             i++;
             j++;
         }
-        if (match)
-            return true;
+        if (match) return true;
 
         // neg diagonal (0, size-1) -> (1, size-2)
         i = 1;

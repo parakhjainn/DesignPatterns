@@ -5,12 +5,13 @@
 using namespace std;
 
 class Game {
-private:
     Board board;
     vector<Player> players;
     int currentPlayer;
 
 public:
+    Game () {}
+
     Game(int size, const vector<Player>& players) 
         : board(size), players(players), currentPlayer(0) {}
 
@@ -31,7 +32,7 @@ public:
                 
                 try {
                     board.playMove(row, col, player.getSymbol());
-                } catch (const invalid_argument& e) {
+                } catch (invalid_argument& e) {
                     cout << "Invalid move, try again." << endl;
                     continue; // don't change player
                 }
