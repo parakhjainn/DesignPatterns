@@ -30,7 +30,7 @@ public:
         return nullptr;
     }
     void createPlaylist(const string& playlistName) {
-        PlaylistManager::getInstance()->createPlaylist(playlistName);
+        PlaylistManager::getInstance().createPlaylist(playlistName);
     }
 
     void addSongToPlaylist(const string& playlistName,
@@ -39,8 +39,7 @@ public:
         if (!song) {
             throw runtime_error("Song \"" + songTitle + "\" not found in library.");
         }
-        PlaylistManager::getInstance()
-            ->addSongToPlaylist(playlistName, song);
+        PlaylistManager::getInstance().addSongToPlaylist(playlistName, song);
     }
 
     void connectAudioDevice(DeviceType deviceType) {

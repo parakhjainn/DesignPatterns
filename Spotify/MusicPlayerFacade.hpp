@@ -30,15 +30,15 @@ public:
     }
 
     void connectDevice(DeviceType deviceType) {
-        DeviceManager::getInstance()->connect(deviceType);
+        DeviceManager::getInstance().connect(deviceType);
     }
 
     void setPlayStrategy(PlayStrategyType strategyType) {
-        playStrategy = StrategyManager::getInstance()->getStrategy(strategyType);
+        playStrategy = StrategyManager::getInstance().getStrategy(strategyType);
     }
 
     void loadPlaylist(const string& name) {
-        loadedPlaylist = PlaylistManager::getInstance()->getPlaylist(name);
+        loadedPlaylist = PlaylistManager::getInstance().getPlaylist(name);
         if (!playStrategy) {
             throw runtime_error("Play strategy not set before loading.");
         }
@@ -46,10 +46,10 @@ public:
     }
     
     void playSong(Song* song) {
-        if (!DeviceManager::getInstance()->hasOutputDevice()) {
+        if (!DeviceManager::getInstance().hasOutputDevice()) {
             throw runtime_error("No audio device connected.");
         }
-        IAudioOutputDevice* device = DeviceManager::getInstance()->getOutputDevice();
+        IAudioOutputDevice* device = DeviceManager::getInstance().getOutputDevice();
         audioEngine->play(device, song);
     }
 
@@ -66,7 +66,7 @@ public:
         }
         while (playStrategy->hasNext()) {
             Song* nextSong = playStrategy->next();
-            IAudioOutputDevice* device = DeviceManager::getInstance()->getOutputDevice();
+            IAudioOutputDevice* device = DeviceManager::getInstance().getOutputDevice();
             audioEngine->play(device, nextSong);
         }
         cout << "Completed playlist: " << loadedPlaylist->getPlaylistName() << "\n";
@@ -78,7 +78,7 @@ public:
         }
         if(playStrategy->hasNext()) {
             Song* nextSong = playStrategy->next();
-            IAudioOutputDevice* device = DeviceManager::getInstance()->getOutputDevice();
+            IAudioOutputDevice* device = DeviceManager::getInstance().getOutputDevice();
             audioEngine->play(device, nextSong);
         }
         else {
@@ -92,7 +92,7 @@ public:
         }
         if(playStrategy->hasPrevious()) {
             Song* prevSong = playStrategy->previous();
-            IAudioOutputDevice* device = DeviceManager::getInstance()->getOutputDevice();
+            IAudioOutputDevice* device = DeviceManager::getInstance().getOutputDevice();
             audioEngine->play(device, prevSong);
         }
         else {
