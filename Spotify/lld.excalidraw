@@ -2809,8 +2809,8 @@
         "type": 3
       },
       "seed": 2104990939,
-      "version": 592,
-      "versionNonce": 1963383850,
+      "version": 593,
+      "versionNonce": 1330878959,
       "isDeleted": false,
       "boundElements": [
         {
@@ -2832,9 +2832,13 @@
         {
           "id": "l8HphCNrHQwAm1OuDV6UG",
           "type": "arrow"
+        },
+        {
+          "id": "_N3EI9ERrAA1BqiIsCAaR",
+          "type": "arrow"
         }
       ],
-      "updated": 1761127177668,
+      "updated": 1761129661069,
       "link": null,
       "locked": false
     },
@@ -2842,9 +2846,9 @@
       "id": "f8bzjN74wdxxe6WfoUzya",
       "type": "text",
       "x": 987.6876073164966,
-      "y": 1380.3835982721712,
+      "y": 1367.8835982721712,
       "width": 280.97979736328125,
-      "height": 275,
+      "height": 300,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -2858,20 +2862,20 @@
       "index": "b0B",
       "roundness": null,
       "seed": 1942309243,
-      "version": 810,
-      "versionNonce": 245282218,
+      "version": 832,
+      "versionNonce": 1627645665,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1761127043634,
+      "updated": 1761129574939,
       "link": null,
       "locked": false,
-      "text": "9. MusicPlayerFacade\n\n- AudioEngine\n\n- connectDevice(DeviceType)\n- play(Song)\n- pause(song)\n- playAll(Playlist)\n\n- PlayingStrategy\n- setPlayingStrategy()",
+      "text": "9. MusicPlayerFacade\n\n- AudioEngine\n\n- connectDevice(DeviceType)\n- loadPlaylist(name)\n- play(Song)\n- pause(song)\n- playAll(Playlist)\n\n- PlayingStrategy\n- setPlayingStrategy()",
       "fontSize": 20,
       "fontFamily": 5,
       "textAlign": "center",
       "verticalAlign": "middle",
       "containerId": "g9O0QzkmzliZ7tXd3Thna",
-      "originalText": "9. MusicPlayerFacade\n\n- AudioEngine\n\n- connectDevice(DeviceType)\n- play(Song)\n- pause(song)\n- playAll(Playlist)\n\n- PlayingStrategy\n- setPlayingStrategy()",
+      "originalText": "9. MusicPlayerFacade\n\n- AudioEngine\n\n- connectDevice(DeviceType)\n- loadPlaylist(name)\n- play(Song)\n- pause(song)\n- playAll(Playlist)\n\n- PlayingStrategy\n- setPlayingStrategy()",
       "autoResize": true,
       "lineHeight": 1.25
     },
@@ -3031,8 +3035,8 @@
         "type": 3
       },
       "seed": 1156008027,
-      "version": 469,
-      "versionNonce": 1125893418,
+      "version": 470,
+      "versionNonce": 1549478447,
       "isDeleted": false,
       "boundElements": [
         {
@@ -3042,9 +3046,13 @@
         {
           "id": "LRUS7J8Jh8m0Ss1LCdCUp",
           "type": "arrow"
+        },
+        {
+          "id": "_N3EI9ERrAA1BqiIsCAaR",
+          "type": "arrow"
         }
       ],
-      "updated": 1761126366841,
+      "updated": 1761129661069,
       "link": null,
       "locked": false
     },
@@ -3285,7 +3293,7 @@
     {
       "id": "GwFacMG3lzgWMWuXvQ-dc",
       "type": "text",
-      "x": 2289.1314366806037,
+      "x": 2289.131436680603,
       "y": 2187.325081463491,
       "width": 312.259765625,
       "height": 250,
@@ -3302,11 +3310,11 @@
       "index": "b0KV",
       "roundness": null,
       "seed": 2025345578,
-      "version": 310,
-      "versionNonce": 1372156074,
+      "version": 311,
+      "versionNonce": 1582776207,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1761125947744,
+      "updated": 1761129645906,
       "link": null,
       "locked": false,
       "text": "<<abstract>>\n\n12. PlayingStrategy\n\n- setPlaylist(Playlist)\n- next()\n- hasNext()\n- hasPrevious()\n- nextSong() {} // Tradeoff for\nCustomPS and empty definition",
@@ -4297,6 +4305,60 @@
       "originalText": "Once Playlist end, we stop\nand we didn't go to start \nbecause in multi-thread env.\nthis loop will never ends.",
       "autoResize": true,
       "lineHeight": 1.25
+    },
+    {
+      "id": "_N3EI9ERrAA1BqiIsCAaR",
+      "type": "arrow",
+      "x": 1359.2518318725113,
+      "y": 1632.310057741312,
+      "width": 642.9888853563991,
+      "height": 131.2551697972649,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b0j",
+      "roundness": {
+        "type": 2
+      },
+      "seed": 2075920463,
+      "version": 104,
+      "versionNonce": 1402407567,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1761129669568,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          642.9888853563991,
+          131.2551697972649
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "g9O0QzkmzliZ7tXd3Thna",
+        "focus": 0.2942155074353741,
+        "gap": 4.104130512263282
+      },
+      "endBinding": {
+        "elementId": "EWvunTE7yHSRKzXGkseM1",
+        "focus": 0.5619027042363034,
+        "gap": 2.705395785611464
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false
     }
   ],
   "appState": {
